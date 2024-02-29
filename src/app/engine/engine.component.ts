@@ -6,8 +6,9 @@ import { Component, ElementRef, OnInit, ViewChild,
 import { EngineService } from './engine.service';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { ApiService } from '../api.service';
-import { retry } from "rxjs/operators";
+import { retry, take } from "rxjs/operators";
 import { DOCUMENT } from '@angular/common';
+import { pipe } from 'rxjs';
 
 @Component({
   selector: 'app-engine',
@@ -22,8 +23,8 @@ export class EngineComponent implements OnInit {
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
-    this.ws = webSocket('http://'+document.location.host+'/rdsocket');
-    this.ws.pipe(retry(99999999)).subscribe({
+    this.ws = webSocket('ws://192.168.1.29:4080');
+    this.ws.pipe(take(1)).subscribe({
       next : (data) => {
 
         const lista = data.list;
