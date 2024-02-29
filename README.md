@@ -8,3 +8,9 @@ This client read data from a Json or a rest service and display the output in a 
 
 Open this link https://fabiovalentino.github.io/threejs_radar/
 and select a player from the dropdown menu
+
+
+NOTE:
+Default user pass for docker build is
+user: user
+pass: 1234

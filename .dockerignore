@@ -1,0 +1,11 @@
+node_modules/
+.vscode/
+docs/
+e2e/
+.angular/
+build.old.sh
+configure-nginx.sh
+serve.sh
+LICENSE.md
+README.md
+myhost.nginx.template

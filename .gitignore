@@ -47,3 +47,4 @@ baseline.json
 .nginx
 .nginx.template
 .angular
+.htpasswd
