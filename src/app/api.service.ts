@@ -1,24 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Player } from './player';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
-// const urlPlayers = 'https://myhost.com/rest/listPlayers';
-const urlPlayers = 'assets/mock/listPlayers.json';
-
-
-@Injectable({
-  providedIn: 'root'
-})
-
+@Injectable({ providedIn: 'root' })
 export class ApiService {
+    private sbj = new Subject<any>(); //need to create a subject
 
-  constructor( private http: HttpClient ) {
-   }
+    sendUpdate(items) { //the component that wants to update something, calls this fn
+        this.sbj.next(items); //next() will feed the value in Subject
+    }
 
-  getPlayer(): Observable<HttpResponse<Player>> {
-    return this.http.get<Player>(
-      urlPlayers, { observe: 'response' });
-  }
-
+    getUpdate(): Observable<any> { //the receiver component calls this function 
+        return this.sbj.asObservable(); //it returns as an observable to which the receiver funtion will subscribe
+    }
 }

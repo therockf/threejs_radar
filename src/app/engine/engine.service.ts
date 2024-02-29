@@ -2,14 +2,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Injectable, ElementRef, OnDestroy, NgZone } from '@angular/core';
 import { List } from '../list';
-import { ApiService } from '../api.service';
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EngineService implements OnDestroy {
+
+  ws : WebSocketSubject<any>;
+
   private canvas: HTMLCanvasElement;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
@@ -58,7 +61,18 @@ export class EngineService implements OnDestroy {
 
   private loadedGLTF;
 
-  public constructor(private ngZone: NgZone, private api: ApiService) {
+  public constructor(private ngZone: NgZone) {
+
+    this.ws = webSocket('ws://192.168.1.29:4080');
+    this.ws.subscribe({
+      next : (data) => {
+        console.log(`Received ${data}`);
+        this.updatePlayers(data);
+      },
+      error : (err) => console.log(`Error ${err}`),
+      complete : () => {}
+    });
+
     this.settings = {
       'show model': true,
       'show skeleton': false,
@@ -87,7 +101,7 @@ export class EngineService implements OnDestroy {
         this.prepareCrossFade(this.runAction, this.walkAction, 5.0);
 
       },
-      'use default duration': true,
+      'use default duration': false ,
       'set custom duration': 1.0,
       'modify idle weight': 1.0,
       'modify walk weight': 0.0,
@@ -98,26 +112,24 @@ export class EngineService implements OnDestroy {
 
 
 
-  updatePlayers() {
+  updatePlayers(data) {
     if (this.playerid !== null && this.playerid !== undefined && this.playerid !== '') {
       if (this.pivot === undefined) {
-        this.getPlayers();
+        this.getPlayers(data);
       } else {
-        this.api.getPlayer()
-          .subscribe( data => {
-            if ( data.body !== null
-              && data.body !== undefined
-              && data.body.root !== undefined
-              && data.body.root.playerCount === 0 ) {
+            if ( data !== null
+              && data !== undefined
+              && data.root !== undefined
+              && data.root.playerCount === 0 ) {
               this.refreshVisual();
             }
-            if ( data.body !== null
-              && data.body !== undefined
-              && data.body.root !== undefined
-              && data.body.root.playerCount > 0 ) {
+            if ( data!== null
+              && data!== undefined
+              && data.root !== undefined
+              && data.root.playerCount > 0 ) {
 
-              const count = data.body.root.playerCount;
-              const lista = data.body.list;
+              const count = data.root.playerCount;
+              const lista = data.list;
 
 
               let playerIdx = 0;
@@ -144,27 +156,27 @@ export class EngineService implements OnDestroy {
                       const children = this.pivot.getObjectById(oldEnemyId);
                       if (children !== null && children !== undefined) {
 
-                        if (this.oldlista.get(lista[i].id) !== undefined && this.oldlista.get(lista[i].id) !== null) {
-                          let diffX = lista[i].playerX - this.oldlista.get(lista[i].id).playerX;
-                          let diffY = lista[i].playerY - this.oldlista.get(lista[i].id).playerY;
-                          let diffZ = lista[i].playerZ - this.oldlista.get(lista[i].id).playerZ;
-                          if ( diffX < 0 ) { diffX = Math.abs(diffX); }
-                          if ( diffY < 0 ) { diffY = Math.abs(diffY); }
-                          if ( diffZ < 0 ) { diffZ = Math.abs(diffZ); }
-                          if ( diffX === 0 && diffY === 0 && diffZ === 0 ) {
-                            this.setWeight(this.idleAction.get('Soldier_' + lista[i].id), 1.0);
-                            this.setWeight(this.walkAction.get('Soldier_' + lista[i].id), 0.0);
-                            this.setWeight(this.runAction.get('Soldier_' + lista[i].id), 0.0);
-                          } else if ((diffX >= 0 && diffX <= 10) || (diffY >= 0 && diffY <= 10) || (diffZ >= 0 && diffZ <= 10)) {
-                            this.setWeight(this.idleAction.get('Soldier_' + lista[i].id), 0.0);
-                            this.setWeight(this.walkAction.get('Soldier_' + lista[i].id), 1.0);
-                            this.setWeight(this.runAction.get('Soldier_' + lista[i].id), 0.0);
-                          } else {
-                            this.setWeight(this.idleAction.get('Soldier_' + lista[i].id), 0.0);
-                            this.setWeight(this.walkAction.get('Soldier_' + lista[i].id), 0.0);
-                            this.setWeight(this.runAction.get('Soldier_' + lista[i].id), 1.0);
-                          }
-                        }
+                        //if (this.oldlista.get(lista[i].id) !== undefined && this.oldlista.get(lista[i].id) !== null) {
+                        //  let diffX = lista[i].playerX - this.oldlista.get(lista[i].id).playerX;
+                        //  let diffY = lista[i].playerY - this.oldlista.get(lista[i].id).playerY;
+                        //  let diffZ = lista[i].playerZ - this.oldlista.get(lista[i].id).playerZ;
+                        //  if ( diffX < 0 ) { diffX = Math.abs(diffX); }
+                        //  if ( diffY < 0 ) { diffY = Math.abs(diffY); }
+                        //  if ( diffZ < 0 ) { diffZ = Math.abs(diffZ); }
+                        //  if ( diffX === 0 && diffY === 0 && diffZ === 0 ) {
+                        //    this.setWeight(this.idleAction.get('Soldier_' + lista[i].id), 1.0);
+                        //    this.setWeight(this.walkAction.get('Soldier_' + lista[i].id), 0.0);
+                        //    this.setWeight(this.runAction.get('Soldier_' + lista[i].id), 0.0);
+                        //  } else if ((diffX >= 0 && diffX <= 10) || (diffY >= 0 && diffY <= 10) || (diffZ >= 0 && diffZ <= 10)) {
+                        //    this.setWeight(this.idleAction.get('Soldier_' + lista[i].id), 0.0);
+                        //    this.setWeight(this.walkAction.get('Soldier_' + lista[i].id), 1.0);
+                        //    this.setWeight(this.runAction.get('Soldier_' + lista[i].id), 0.0);
+                        //  } else {
+                        //    this.setWeight(this.idleAction.get('Soldier_' + lista[i].id), 0.0);
+                        //    this.setWeight(this.walkAction.get('Soldier_' + lista[i].id), 0.0);
+                        //    this.setWeight(this.runAction.get('Soldier_' + lista[i].id), 1.0);
+                        //  }
+                        //}
                         this.oldlista.set(lista[i].id, lista[i]);
 
                         children.position.x = posX;
@@ -173,24 +185,20 @@ export class EngineService implements OnDestroy {
 
 
 
-                        const lifep = (<THREE.Mesh>this.pivot2.getObjectByName('playerLife_' + lista[i].id));
-                        const lifecontainerp = (<THREE.Mesh>this.pivot2.getObjectByName('playerLifeContainer_' + lista[i].id));
-                        const health = lista[i].health;
-                        const percentage = (10 / this.maxLife) * health;
-                        (<THREE.CylinderGeometry>lifep.geometry) = new THREE.CylinderGeometry(0.5, 0.5, percentage, 10);
-
-
+                        //const lifep = (<THREE.Mesh>this.pivot2.getObjectByName('playerLife_' + lista[i].id));
+                        //const lifecontainerp = (<THREE.Mesh>this.pivot2.getObjectByName('playerLifeContainer_' + lista[i].id));
+                        //const health = lista[i].health;
+                        //const percentage = (10 / this.maxLife) * health;
+                        //(<THREE.CylinderGeometry>lifep.geometry) = new THREE.CylinderGeometry(0.5, 0.5, percentage, 10);
                         const rotationPiv2elm = this.toRad(this.player.angleVertical * -1);
-
-                        lifep.rotation.z = this.toRad(90) + rotationPiv2elm;
-                        lifep.position.y = posY - 7.5;
-                        lifep.position.x = posX + 0;
-                        lifep.position.z = posZ + 0.5;
-
-                        lifecontainerp.rotation.z = this.toRad(90) + rotationPiv2elm;
-                        lifecontainerp.position.y = posY - 7.5;
-                        lifecontainerp.position.x = posX + 0;
-                        lifecontainerp.position.z = posZ + 0.5;
+                        //lifep.rotation.z = this.toRad(90) + rotationPiv2elm;
+                        //lifep.position.y = posY - 7.5;
+                        //lifep.position.x = posX + 0;
+                        //lifep.position.z = posZ + 0.5;
+                        //lifecontainerp.rotation.z = this.toRad(90) + rotationPiv2elm;
+                        //lifecontainerp.position.y = posY - 7.5;
+                        //lifecontainerp.position.x = posX + 0;
+                        //lifecontainerp.position.z = posZ + 0.5;
 
 
                         const namep = (<THREE.Mesh>this.pivot2.getObjectByName('playerName_' + lista[i].id));
@@ -202,10 +210,10 @@ export class EngineService implements OnDestroy {
                         namep.position.z = posZ + 0.5;
 
 
-                        (<THREE.CylinderGeometry>lifep.geometry).verticesNeedUpdate = true;
-                        (<THREE.CylinderGeometry>lifep.geometry).elementsNeedUpdate = true;
-                        (<THREE.CylinderGeometry>lifep.geometry).uvsNeedUpdate = true;
-                        (<THREE.CylinderGeometry>lifep.geometry).normalsNeedUpdate = true;
+                        //(<THREE.CylinderGeometry>lifep.geometry).verticesNeedUpdate = true;
+                        //(<THREE.CylinderGeometry>lifep.geometry).elementsNeedUpdate = true;
+                        //(<THREE.CylinderGeometry>lifep.geometry).uvsNeedUpdate = true;
+                        //(<THREE.CylinderGeometry>lifep.geometry).normalsNeedUpdate = true;
 
                         if (this.is3D) {
                           const childView = (<THREE.Group>children.getObjectByName('angleHorizontal'));
@@ -273,7 +281,7 @@ export class EngineService implements OnDestroy {
                       const colorName = '0x000000';
                       this.addName(this.pivot2, lista[i].name, lista[i].id, colorName);
 
-                      this.addLife(this.pivot2, lista[i].id, 0, 0, 0);
+                      //this.addLife(this.pivot2, lista[i].id, 0, 0, 0);
 
                       if (this.is3D) {
                         const mGlass = new THREE.MeshLambertMaterial({
@@ -320,45 +328,42 @@ export class EngineService implements OnDestroy {
                     this.groupMap.set(lista[i].groupId, '0x000000');
 
 
-                    const lifep = (<THREE.Mesh>this.scene.getObjectByName('playerLife'));
+                    //const lifep = (<THREE.Mesh>this.scene.getObjectByName('playerLife'));
 
-                    const health = lista[i].health;
-
-                    const percentage = (10 / this.maxLife) * health;
-
-                    (<THREE.CylinderGeometry>lifep.geometry) = new THREE.CylinderGeometry(0.5, 0.5, percentage, 10);
-
-                    (<THREE.CylinderGeometry>lifep.geometry).verticesNeedUpdate = true;
-                    (<THREE.CylinderGeometry>lifep.geometry).elementsNeedUpdate = true;
-                    (<THREE.CylinderGeometry>lifep.geometry).uvsNeedUpdate = true;
-                    (<THREE.CylinderGeometry>lifep.geometry).normalsNeedUpdate = true;
+                    //const health = lista[i].health;
+                    //const percentage = (10 / this.maxLife) * health;
+                    //(<THREE.CylinderGeometry>lifep.geometry) = new THREE.CylinderGeometry(0.5, 0.5, percentage, 10);
+                    //(<THREE.CylinderGeometry>lifep.geometry).verticesNeedUpdate = true;
+                    //(<THREE.CylinderGeometry>lifep.geometry).elementsNeedUpdate = true;
+                    //(<THREE.CylinderGeometry>lifep.geometry).uvsNeedUpdate = true;
+                    //(<THREE.CylinderGeometry>lifep.geometry).normalsNeedUpdate = true;
                   }
 
                 }
                 this.pivot.rotation.z = this.toRad(this.player.angleVertical);
                 this.pivot2.rotation.z = this.toRad(this.player.angleVertical);
 
-                if (this.oldplayer !== undefined) {
-                  let diffX = this.oldplayer.playerX - this.player.playerX;
-                  let diffY = this.oldplayer.playerY - this.player.playerY;
-                  let diffZ = this.oldplayer.playerZ - this.player.playerZ;
-                  if (diffX < 0) { diffX = Math.abs(diffX); }
-                  if (diffY < 0) { diffY = Math.abs(diffY); }
-                  if (diffZ < 0) { diffZ = Math.abs(diffZ); }
-                  if (diffX === 0 && diffY === 0 && diffZ === 0) {
-                    this.setWeight(this.idleAction.get('SoldierPlayer'), 1.0);
-                    this.setWeight(this.walkAction.get('SoldierPlayer'), 0.0);
-                    this.setWeight(this.runAction.get('SoldierPlayer'), 0.0);
-                  } else if ((diffX >= 0 && diffX <= 10) || (diffY >= 0 && diffY <= 10) || (diffZ >= 0 && diffZ <= 10)) {
-                    this.setWeight(this.idleAction.get('SoldierPlayer'), 0.0);
-                    this.setWeight(this.walkAction.get('SoldierPlayer'), 1.0);
-                    this.setWeight(this.runAction.get('SoldierPlayer'), 0.0);
-                  } else {
-                    this.setWeight(this.idleAction.get('SoldierPlayer'), 0.0);
-                    this.setWeight(this.walkAction.get('SoldierPlayer'), 0.0);
-                    this.setWeight(this.runAction.get('SoldierPlayer'), 1.0);
-                  }
-                }
+                //if (this.oldplayer !== undefined) {
+                //  let diffX = this.oldplayer.playerX - this.player.playerX;
+                //  let diffY = this.oldplayer.playerY - this.player.playerY;
+                //  let diffZ = this.oldplayer.playerZ - this.player.playerZ;
+                //  if (diffX < 0) { diffX = Math.abs(diffX); }
+                //  if (diffY < 0) { diffY = Math.abs(diffY); }
+                //  if (diffZ < 0) { diffZ = Math.abs(diffZ); }
+                //  if (diffX === 0 && diffY === 0 && diffZ === 0) {
+                //    this.setWeight(this.idleAction.get('SoldierPlayer'), 1.0);
+                //    this.setWeight(this.walkAction.get('SoldierPlayer'), 0.0);
+                //    this.setWeight(this.runAction.get('SoldierPlayer'), 0.0);
+                //  } else if ((diffX >= 0 && diffX <= 10) || (diffY >= 0 && diffY <= 10) || (diffZ >= 0 && diffZ <= 10)) {
+                //    this.setWeight(this.idleAction.get('SoldierPlayer'), 0.0);
+                //    this.setWeight(this.walkAction.get('SoldierPlayer'), 1.0);
+                //    this.setWeight(this.runAction.get('SoldierPlayer'), 0.0);
+                //  } else {
+                //    this.setWeight(this.idleAction.get('SoldierPlayer'), 0.0);
+                //    this.setWeight(this.walkAction.get('SoldierPlayer'), 0.0);
+                //    this.setWeight(this.runAction.get('SoldierPlayer'), 1.0);
+                //  }
+                //}
                 this.oldplayer = this.player;
 
                 const keys = Array.from(this.enemies.keys());
@@ -369,23 +374,21 @@ export class EngineService implements OnDestroy {
                     this.pivot.remove(childDead);
                     this.enemies.delete(key);
 
-                    const lifep = (<THREE.Mesh>this.scene.getObjectByName('playerLife_' + key));
-                    const lifecontainerp = (<THREE.Mesh>this.scene.getObjectByName('playerLifeContainer_' + key));
+                    //const lifep = (<THREE.Mesh>this.scene.getObjectByName('playerLife_' + key));
+                    //const lifecontainerp = (<THREE.Mesh>this.scene.getObjectByName('playerLifeContainer_' + key));
                     const namep = (<THREE.Mesh>this.scene.getObjectByName('playerName_' + key));
 
 
-                    this.pivot2.remove(lifep);
-                    this.pivot2.remove(lifecontainerp);
+                    //this.pivot2.remove(lifep);
+                    //this.pivot2.remove(lifecontainerp);
                     this.pivot2.remove(namep);
 
 
                   }
                 }
 
-
-              }
             }
-          });
+          }
       }
     }
   }
@@ -399,18 +402,17 @@ export class EngineService implements OnDestroy {
     return false;
   }
 
-  getPlayers() {
-    this.api.getPlayer()
-      .subscribe(data => {
+  public getPlayers(data) {
         if (this.playerid !== null
           && this.playerid !== undefined
           && this.playerid !== ''
-          && data.body !== null
-          && data.body !== undefined
-          && data.body.root !== undefined
-          && data.body.root.playerCount > 0) {
-          const count = data.body.root.playerCount;
-          const lista = data.body.list;
+          && data !== null
+          && data !== null
+          && data !== undefined
+          && data.root !== undefined
+          && data.root.playerCount > 0) {
+          const count = data.root.playerCount;
+          const lista = data.list;
 
           for (let i = 0; i < count; i++) {
             const id = lista[i].id;
@@ -432,7 +434,6 @@ export class EngineService implements OnDestroy {
             this.pivot.remove(children);
           }
         }
-      });
   }
 
   public ngOnDestroy() {
@@ -457,14 +458,7 @@ export class EngineService implements OnDestroy {
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.createSceneInternal();
-
-
-
-    this.getPlayers();
-    this.interval = setInterval(() => {
-      this.updatePlayers();
-    }, 2000);
-
+    this.updatePlayers(null);
   }
 
   createSceneInternal() {
@@ -562,7 +556,7 @@ export class EngineService implements OnDestroy {
     this.linePlayer = new THREE.Line(lineGeom, matGeom);
     this.scene.add(this.linePlayer);
 
-    this.addLife(this.scene, '', 0, 0, 0);
+    //this.addLife(this.scene, '', 0, 0, 0);
 
 
 

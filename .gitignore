@@ -46,3 +46,4 @@ baseline.json
 #nginx config
 .nginx
 .nginx.template
+.angular
