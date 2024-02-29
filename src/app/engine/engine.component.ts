@@ -22,7 +22,7 @@ export class EngineComponent implements OnInit {
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
-    this.ws = webSocket('ws://'+document.location.host+'/rxsocket');
+    this.ws = webSocket('http://'+document.location.host+'/rdsocket');
     this.ws.pipe(retry(99999999)).subscribe({
       next : (data) => {
 
