@@ -21,6 +21,7 @@ export class EngineComponent implements OnInit {
   selected = { id: 0, name: 'Select Player' };
   items = [ this.selected ];
   url = '';
+  playerCount = 0
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
@@ -31,22 +32,29 @@ export class EngineComponent implements OnInit {
       share(),
       retry(50000),
       repeat(10000)
-     ).pipe(take(1)).subscribe({
+     ).subscribe({
       next : (data) => {
 
-        const lista = data.list;
+        let dataPlayerCount = parseInt(data.playerCount);
 
-        if(this.items.length != data.list.length){
-          this.items = [ { id: 0, name: 'Select Player' } ];
-          for (let i = 0; i < lista.length; i++) {
-            let value = { id: lista[i].name, name: lista[i].name }
-            this.items.push(value);
+        if (dataPlayerCount === 0 && this.playerCount !== 0) {
+          this.engServ.createScene(this.rendererCanvas);
+          this.playerCount = dataPlayerCount;
+        } else {
+          const lista = data.list;
+          if(this.items.length != data.list.length){
+            this.items = [ { id: 0, name: 'Select Player' } ];
+            for (let i = 0; i < lista.length; i++) {
+              let value = { id: lista[i].name, name: lista[i].name }
+              this.items.push(value);
+            }
+            this.apiServ.sendUpdate(this.items);
           }
-          this.apiServ.sendUpdate(this.items);
-        }
 
-        console.log(`Received ${data}`);
-        this.engServ.updatePlayers(data);
+          console.log(`Received ${data}`);
+          this.engServ.updatePlayers(data);
+          this.playerCount = dataPlayerCount;
+        }
       },
       error : (err) => {
         console.log(`Error ${err}. URL: ${this.url}`)

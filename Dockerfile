@@ -2,10 +2,18 @@ FROM node:21.6.2-alpine as build
 
 WORKDIR /usr/local/app
 
-COPY ./ /usr/local/app/
+ADD ./package.json /usr/local/app/
+ADD ./package-lock.json /usr/local/app/
 
 # Install all the dependencies
-RUN npm install
+RUN npm install --only-production
+
+RUN mkdir /usr/local/app/src
+COPY ./src/ /usr/local/app/src/
+ADD ./angular.json /usr/local/app/
+ADD ./browserslist /usr/local/app/
+ADD ./tsconfig.json /usr/local/app/
+ADD ./tslint.json /usr/local/app/
 
 ENV NODE_OPTIONS="--openssl-legacy-provider --no-experimental-fetch"
 # Generate the build of the application
