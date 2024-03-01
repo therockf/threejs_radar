@@ -11,11 +11,7 @@ import { ApiService } from 'src/app/api.service';
 export class UiInfobarTopComponent implements OnInit, OnDestroy {
 
   selected = { id: 0, name: 'Select Player' };
-  items = [ { id: 0, name: 'Select Player' }, 
-            { id: "bingobangobengo", name: 'bingobangobengo' }, 
-            { id: "blastbeng", name: 'blastbeng' }, 
-            { id: "Maial", name: 'Maial' }, 
-            { id: "Di0", name: 'Di0' } ];
+  items = [ this.selected ];
   private subscription: Subscription;
 
   constructor(private engServ: EngineService, private apiServ: ApiService) {
@@ -48,6 +44,6 @@ export class UiInfobarTopComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() { // It's a good practice to unsubscribe to ensure no memory leaks
     this.subscription.unsubscribe();
-}
+  }
 
 }

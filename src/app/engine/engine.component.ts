@@ -19,13 +19,8 @@ export class EngineComponent implements OnInit {
   ws : WebSocketSubject<any>;
 
   selected = { id: 0, name: 'Select Player' };
-  items = [ { id: 0, name: 'Select Player' }, 
-            { id: "bingobangobengo", name: 'bingobangobengo' }, 
-            { id: "blastbeng", name: 'blastbeng' }, 
-            { id: "Maial", name: 'Maial' }, 
-            { id: "Di0", name: 'Di0' } ];
+  items = [ this.selected ];
   url = '';
-  playerCount = 0
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
@@ -40,27 +35,21 @@ export class EngineComponent implements OnInit {
      ).subscribe({
       next : (data) => {
 
-        let dataPlayerCount = parseInt(data.playerCount);
-
-        if (dataPlayerCount === 0 && this.playerCount !== 0) {
-          this.engServ.createScene(this.rendererCanvas);
-          this.playerCount = dataPlayerCount;
-        } else {
+        if (parseInt(data.root.playerCount) !== 0) {
           const lista = data.list;
           if (lista !== null) {            
-            if(this.items.length != data.list.length){
-              //this.items = [ { id: 0, name: 'Select Player' } ];
-              //for (let i = 0; i < lista.length; i++) {
-              //  let value = { id: lista[i].name, name: lista[i].name }
-              //  this.items.push(value);
-              //}
+            if((this.items.length-1) != data.list.length){
+              this.items = [ { id: 0, name: 'Select Player' } ];
+              for (let i = 0; i < lista.length; i++) {
+                let value = { id: lista[i].name, name: lista[i].name }
+                this.items.push(value);
+              }
               this.apiServ.sendUpdate(this.items);
             }
           }
 
           console.log(`Received ${data}`);
           this.engServ.updatePlayers(data);
-          this.playerCount = dataPlayerCount;
         }
       },
       error : (err) => {
