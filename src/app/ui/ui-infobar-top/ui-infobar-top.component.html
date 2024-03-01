@@ -1,11 +1,15 @@
+<div class="top-elements">
+    <button (click)="resetVisual()">3D View</button>  
+<button (click)="highVisual()">2D View</button>  
+<button (click)="refreshVisual()">Refresh</button>  
 <ng-select     
                [items]="items"
                bindLabel="name"
                placeholder=""
                appendTo="body"
+               highlightColor="#9575cd"
+               highlightTextColor="#fff"
                [(ngModel)]="selected"
                (change)="getValues()">>
 </ng-select>
-<button (click)="resetVisual()">3D View</button>  
-<button (click)="highVisual()">2D View</button>  
-<button (click)="refreshVisual()">Refresh</button>  
+</div>
