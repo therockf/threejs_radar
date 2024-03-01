@@ -6,7 +6,7 @@ import { Component, ElementRef, OnInit, ViewChild,
 import { EngineService } from './engine.service';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { ApiService } from '../api.service';
-import { retry, take } from "rxjs/operators";
+import { repeat, retry, share, take } from "rxjs/operators";
 import { DOCUMENT } from '@angular/common';
 import { pipe } from 'rxjs';
 
@@ -24,7 +24,11 @@ export class EngineComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
     this.ws = webSocket('ws://192.168.1.29:4080');
-    this.ws.pipe(take(1)).subscribe({
+    this.ws.pipe(
+      share(),
+      retry(5000),
+      repeat(10000)
+     ).pipe(take(1)).subscribe({
       next : (data) => {
 
         const lista = data.list;
@@ -41,8 +45,11 @@ export class EngineComponent implements OnInit {
         console.log(`Received ${data}`);
         this.engServ.updatePlayers(data);
       },
-      error : (err) => console.log(`Error ${err}`),
-      complete : () => {}
+      error : (err) => {
+        console.log(`Error ${err}`)
+      },
+      complete : () => {
+        console.log(`Completed`)}
     });
   }
   title = 'threejs_radar';
