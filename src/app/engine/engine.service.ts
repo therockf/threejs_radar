@@ -4,14 +4,11 @@ import { Injectable, ElementRef, OnDestroy, NgZone } from '@angular/core';
 import { List } from '../list';
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EngineService implements OnDestroy {
-
-  ws : WebSocketSubject<any>;
 
   private canvas: HTMLCanvasElement;
   private renderer: THREE.WebGLRenderer;
@@ -62,16 +59,6 @@ export class EngineService implements OnDestroy {
   private loadedGLTF;
 
   public constructor(private ngZone: NgZone) {
-
-    this.ws = webSocket('ws://192.168.1.29:4080');
-    this.ws.subscribe({
-      next : (data) => {
-        console.log(`Received ${data}`);
-        this.updatePlayers(data);
-      },
-      error : (err) => console.log(`Error ${err}`),
-      complete : () => {}
-    });
 
     this.settings = {
       'show model': true,

@@ -11,4 +11,4 @@ openssl req -new -days 365 -nodes -x509 \
 
 echo "SSLEngine on" >> /usr/local/apache2/conf/httpd.conf
 echo "SSLCertificateFile /usr/local/apache2/www.${domain}.com.cert" >> /usr/local/apache2/conf/httpd.conf
-echo "SSLCertificateKeyFile /usr/local/apache2/www.${domain}.com..key" >> /usr/local/apache2/conf/httpd.conf
+echo "SSLCertificateKeyFile /usr/local/apache2/www.${domain}.com.key" >> /usr/local/apache2/conf/httpd.conf

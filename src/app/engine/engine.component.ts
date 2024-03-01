@@ -24,12 +24,12 @@ export class EngineComponent implements OnInit {
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
-    this.url = 'ws://'+document.location.host+'/rdsocket';
+    this.url = 'wss://'+document.location.host+'/rdsocket';
 
     this.ws = webSocket(this.url);
     this.ws.pipe(
       share(),
-      retry(5000),
+      retry(50000),
       repeat(10000)
      ).pipe(take(1)).subscribe({
       next : (data) => {
