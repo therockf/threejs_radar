@@ -19,13 +19,18 @@ export class EngineComponent implements OnInit {
   ws : WebSocketSubject<any>;
 
   selected = { id: 0, name: 'Select Player' };
-  items = [ this.selected ];
+  items = [ { id: 0, name: 'Select Player' }, 
+            { id: "bingobangobengo", name: 'bingobangobengo' }, 
+            { id: "blastbeng", name: 'blastbeng' }, 
+            { id: "Maial", name: 'Maial' }, 
+            { id: "Di0", name: 'Di0' } ];
   url = '';
   playerCount = 0
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
-    this.url = 'wss://'+document.location.host+'/rdsocket';
+    //this.url = 'wss://'+document.location.host+'/rdsocket';
+    this.url = 'ws://192.168.1.29:4080';
 
     this.ws = webSocket(this.url);
     this.ws.pipe(
@@ -42,13 +47,15 @@ export class EngineComponent implements OnInit {
           this.playerCount = dataPlayerCount;
         } else {
           const lista = data.list;
-          if(this.items.length != data.list.length){
-            this.items = [ { id: 0, name: 'Select Player' } ];
-            for (let i = 0; i < lista.length; i++) {
-              let value = { id: lista[i].name, name: lista[i].name }
-              this.items.push(value);
+          if (lista !== null) {            
+            if(this.items.length != data.list.length){
+              //this.items = [ { id: 0, name: 'Select Player' } ];
+              //for (let i = 0; i < lista.length; i++) {
+              //  let value = { id: lista[i].name, name: lista[i].name }
+              //  this.items.push(value);
+              //}
+              this.apiServ.sendUpdate(this.items);
             }
-            this.apiServ.sendUpdate(this.items);
           }
 
           console.log(`Received ${data}`);

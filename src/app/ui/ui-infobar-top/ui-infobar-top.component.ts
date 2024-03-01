@@ -11,7 +11,11 @@ import { ApiService } from 'src/app/api.service';
 export class UiInfobarTopComponent implements OnInit, OnDestroy {
 
   selected = { id: 0, name: 'Select Player' };
-  items = [ this.selected ];
+  items = [ { id: 0, name: 'Select Player' }, 
+            { id: "bingobangobengo", name: 'bingobangobengo' }, 
+            { id: "blastbeng", name: 'blastbeng' }, 
+            { id: "Maial", name: 'Maial' }, 
+            { id: "Di0", name: 'Di0' } ];
   private subscription: Subscription;
 
   constructor(private engServ: EngineService, private apiServ: ApiService) {
@@ -23,7 +27,7 @@ export class UiInfobarTopComponent implements OnInit, OnDestroy {
   getValues() {
     if ( this.selected !== undefined && this.selected !== null && this.selected.id !== 0 ) {
       this.engServ.playerid = this.selected.name;
-      this.engServ.setPlayerName(this.selected.name, '0x000000');
+      //this.engServ.setPlayerName(this.selected.name, '0x000000');
     }
   }
 

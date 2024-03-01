@@ -481,10 +481,10 @@ export class EngineService implements OnDestroy {
     this.runWeight = new Map<string, any>();
     this.sizeOfNextStep = new Map<string, number>();
 
-    this.friends['1'] = true;
-    this.friends['2'] = true;
-    this.friends['3'] = true;
-    this.friends['4'] = true;
+    this.friends['blastbeng'] = true;
+    this.friends['bingobangobengo'] = true;
+    this.friends['Maial'] = true;
+    this.friends['Di0'] = true;
 
 
     this.groupMap = new Map<string, string>();
