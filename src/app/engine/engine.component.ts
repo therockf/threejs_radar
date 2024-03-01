@@ -35,21 +35,25 @@ export class EngineComponent implements OnInit {
      ).subscribe({
       next : (data) => {
 
-        if (parseInt(data.root.playerCount) !== 0) {
-          const lista = data.list;
-          if (lista !== null) {            
-            if((this.items.length-1) != data.list.length){
-              this.items = [ { id: 0, name: 'Select Player' } ];
-              for (let i = 0; i < lista.length; i++) {
-                let value = { id: lista[i].name, name: lista[i].name }
-                this.items.push(value);
+        try {
+          if (parseInt(data.root.playerCount) !== 0) {
+            const lista = data.list;
+            if (lista !== null) {            
+              if((this.items.length-1) != data.list.length){
+                this.items = [ { id: 0, name: 'Select Player' } ];
+                for (let i = 0; i < lista.length; i++) {
+                  let value = { id: lista[i].name, name: lista[i].name }
+                  this.items.push(value);
+                }
+                this.apiServ.sendUpdate(this.items);
               }
-              this.apiServ.sendUpdate(this.items);
             }
-          }
 
-          console.log(`Received ${data}`);
-          this.engServ.updatePlayers(data);
+            console.log(`Received ${data}`);
+            this.engServ.updatePlayers(data);
+          }
+        } catch (e) {
+          console.log(e);
         }
       },
       error : (err) => {
