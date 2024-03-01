@@ -20,10 +20,13 @@ export class EngineComponent implements OnInit {
 
   selected = { id: 0, name: 'Select Player' };
   items = [ this.selected ];
+  url = '';
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
-    this.ws = webSocket('ws://192.168.1.29:4080');
+    this.url = 'ws://'+document.location.host+'/rdsocket';
+
+    this.ws = webSocket(this.url);
     this.ws.pipe(
       share(),
       retry(5000),
@@ -46,10 +49,9 @@ export class EngineComponent implements OnInit {
         this.engServ.updatePlayers(data);
       },
       error : (err) => {
-        console.log(`Error ${err}`)
+        console.log(`Error ${err}. URL: ${this.url}`)
       },
-      complete : () => {
-        console.log(`Completed`)}
+      complete : () => {}
     });
   }
   title = 'threejs_radar';

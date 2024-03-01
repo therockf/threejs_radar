@@ -646,7 +646,7 @@ export class EngineService implements OnDestroy {
 
         font: this.font,
 
-        size: 5,
+        size: 30,
         height: 0.1,
         curveSegments: 0,
 

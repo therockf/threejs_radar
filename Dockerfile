@@ -18,6 +18,9 @@ COPY .htaccess /usr/local/apache2/htdocs/
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 RUN chmod -R 755 /usr/local/apache2/htdocs/
 COPY ./.htpasswd /usr/local/apache2/.htpasswd
+
+COPY ./gensslcert.sh /usr/local/apache2/gensslcert.sh
+RUN ./gensslcert.sh
 # Copy the build output to replace the default nginx contents.
 #COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
 #COPY ./default.conf /etc/nginx/conf.d/default.conf
