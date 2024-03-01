@@ -11,9 +11,13 @@ ENV NODE_OPTIONS="--openssl-legacy-provider --no-experimental-fetch"
 # Generate the build of the application
 RUN npm run build:prod
 
-FROM nginx:latest
+FROM httpd:2.4
 
+COPY --from=build /usr/local/app/dist/prod /usr/local/apache2/htdocs/
+COPY .htaccess /usr/local/apache2/htdocs/
+COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+RUN chmod -R 755 /usr/local/apache2/htdocs/
+COPY ./.htpasswd /usr/local/apache2/.htpasswd
 # Copy the build output to replace the default nginx contents.
-COPY --from=build /usr/local/app/dist/prod /usr/share/nginx/html
-COPY ./default.conf /etc/nginx/conf.d/default.conf
-COPY ./.htpasswd /etc/nginx/.htpasswd
+#COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
+#COPY ./default.conf /etc/nginx/conf.d/default.conf
