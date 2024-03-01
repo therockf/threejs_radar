@@ -29,8 +29,8 @@ export class EngineComponent implements OnInit {
   
   constructor(@Inject(DOCUMENT) private document, private apiServ: ApiService,  private engServ: EngineService) {
 
-    //this.url = 'wss://'+document.location.host+'/rdsocket';
-    this.url = 'ws://192.168.1.29:4080';
+    this.url = 'wss://'+document.location.host+'/rdsocket';
+    //this.url = 'ws://192.168.1.29:4080';
 
     this.ws = webSocket(this.url);
     this.ws.pipe(
