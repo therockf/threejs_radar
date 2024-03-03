@@ -1,1 +1,13 @@
-@import "~@ng-select/ng-select/themes/default.theme.css";
+@import "~@ng-select/ng-select/themes/material.theme.css";
+
+.btn {
+    border: 1px solid green;
+    background-color: transparent;
+    color: #000000;
+    font-weight: bold;
+}
+.select {
+    background-color: transparent;
+    color: #000000;
+    font-weight: bold;
+}

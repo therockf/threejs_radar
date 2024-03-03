@@ -482,6 +482,7 @@ export class EngineService implements OnDestroy {
     this.sizeOfNextStep = new Map<string, number>();
 
     this.friends['blastbeng'] = true;
+    this.friends['blastbong'] = true;
     this.friends['bingobangobengo'] = true;
     this.friends['Maial'] = true;
     this.friends['Di0'] = true;
@@ -517,7 +518,7 @@ export class EngineService implements OnDestroy {
 
 
     this.camera.up.set(0, 0, 1);
-    this.camera.position.set(0, 0, 100);
+    this.camera.position.set(0, -40, 100);
     this.camera.add(new THREE.PointLight(0xffffff, 0));
 
     const grid = new THREE.GridHelper(1000, 20, 0xffffff, 0x6c7373);
@@ -528,7 +529,8 @@ export class EngineService implements OnDestroy {
     this.scene.add(this.camera);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.target.set(0, 50, 10);
+    this.controls.target.set(0, 10, 10);
+    this.controls.enablePan = true;
     this.controls.update();
 
     const color = 0x00ff00;
@@ -759,8 +761,8 @@ export class EngineService implements OnDestroy {
     this.refreshVisual();
     this.is3D = true;
     this.camera.up.set(0, 0, 1);
-    this.camera.position.set(0, 0, 100);
-    this.controls.target.set(0, 50, 10);
+    this.controls.target.set(0, 10, 10);
+    this.camera.position.set(0, -40, 100);
     this.controls.update();
   }
 

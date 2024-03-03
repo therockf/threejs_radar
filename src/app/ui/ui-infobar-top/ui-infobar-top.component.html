@@ -1,8 +1,5 @@
 <div class="top-elements">
-    <button (click)="resetVisual()">3D View</button>  
-<button (click)="highVisual()">2D View</button>  
-<button (click)="refreshVisual()">Refresh</button>  
-<ng-select     
+<ng-select     class = "select"
                [items]="items"
                bindLabel="name"
                placeholder=""
@@ -11,4 +8,7 @@
                [(ngModel)]="selected"
                (change)="getValues()">>
 </ng-select>
+<button class="btn" (click)="refreshVisual()">Reload</button><br/> 
+<button class="btn" (click)="resetVisual()">3D</button><br/>
+<button class="btn" (click)="highVisual()">2D</button><br/> 
 </div>
