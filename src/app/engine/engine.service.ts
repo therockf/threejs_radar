@@ -113,9 +113,12 @@ export class EngineService implements OnDestroy {
             if ( data!== null
               && data!== undefined
               && data.root !== undefined
-              && data.root.playerCount > 0 ) {
+              && data.list !== null
+              && data.list !== undefined
+              && data.root.playerCount > 0
+              && data.list.length > 0 ) {
 
-              const count = data.root.playerCount;
+              const count = data.list.length;
               const lista = data.list;
 
 
@@ -397,8 +400,11 @@ export class EngineService implements OnDestroy {
           && data !== null
           && data !== undefined
           && data.root !== undefined
-          && data.root.playerCount > 0) {
-          const count = data.root.playerCount;
+          && data.list !== null
+          && data.list !== undefined
+          && data.root.playerCount > 0
+          && data.list.length > 0) {
+          const count = data.list.length;
           const lista = data.list;
 
           for (let i = 0; i < count; i++) {
@@ -530,7 +536,7 @@ export class EngineService implements OnDestroy {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0, 10, 10);
-    this.controls.enablePan = true;
+    this.controls.enablePan = false;
     this.controls.update();
 
     const color = 0x00ff00;
